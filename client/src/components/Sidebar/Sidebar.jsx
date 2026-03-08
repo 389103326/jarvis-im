@@ -15,8 +15,15 @@ import UserSettingsModal from '../common/UserSettingsModal'
 
 export default function Sidebar({ isMobileDrawer = false, onMobileClose }) {
   const { user, logout } = useAuthStore()
-  const { sidebarOpen, toggleSidebar, fetchChannels, fetchUsers, fetchDMList, fetchCategories, categories } = useChatStore()
+  const { sidebarOpen, toggleSidebar, fetchChannels, fetchUsers, fetchDMList, fetchCategories, categories, activeType } = useChatStore()
   const [activeTab, setActiveTab] = useState('channels')
+
+  // 当外部触发 DM（如点击用户列表），自动切换侧边栏到私信 Tab
+  useEffect(() => {
+    if (activeType === 'dm') {
+      setActiveTab('dms')
+    }
+  }, [activeType])
   const [showCreateChannel, setShowCreateChannel] = useState(false)
   const [createCategoryId, setCreateCategoryId] = useState(null)
   const [newChannelName, setNewChannelName] = useState('')

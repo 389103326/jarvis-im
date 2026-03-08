@@ -63,12 +63,36 @@ export default function ChatArea({ onOpenMobileSidebar }) {
   // 没有选中频道时的空状态
   if (!channelId && !dmChannelId) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-discord-channel">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🤖</div>
-          <h2 className="text-2xl font-bold text-white mb-2">欢迎使用 Jarvis IM</h2>
-          <p className="text-discord-muted">从左侧选择一个频道或发起私信开始聊天</p>
-          <p className="text-discord-muted text-xs mt-2">按 <span className="bg-discord-input px-1.5 py-0.5 rounded font-mono">?</span> 查看键盘快捷键</p>
+      <div className="flex-1 flex flex-col bg-discord-channel">
+        {/* 移动端顶部导航栏（含汉堡按钮） */}
+        <div className="md:hidden flex items-center px-4 py-3 border-b border-discord-bg bg-discord-channel flex-shrink-0">
+          <button
+            onClick={onOpenMobileSidebar}
+            className="text-discord-muted hover:text-white p-2 rounded-lg hover:bg-discord-hover transition-colors mr-3"
+            title="打开菜单"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+              <rect y="2" width="18" height="2" rx="1"/>
+              <rect y="8" width="18" height="2" rx="1"/>
+              <rect y="14" width="18" height="2" rx="1"/>
+            </svg>
+          </button>
+          <span className="text-white font-semibold text-sm">Jarvis IM</span>
+        </div>
+        {/* 空状态内容 */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center px-6">
+            <div className="text-6xl mb-4">🤖</div>
+            <h2 className="text-2xl font-bold text-white mb-2">欢迎使用 Jarvis IM</h2>
+            <p className="text-discord-muted mb-1">从左侧选择一个频道或发起私信开始聊天</p>
+            {/* 移动端提示 */}
+            <p className="text-discord-muted text-sm md:hidden mt-3">
+              点击左上角 <span className="bg-discord-input px-2 py-0.5 rounded font-mono text-xs">☰</span> 打开频道列表
+            </p>
+            <p className="text-discord-muted text-xs mt-2 hidden md:block">
+              按 <span className="bg-discord-input px-1.5 py-0.5 rounded font-mono">?</span> 查看键盘快捷键
+            </p>
+          </div>
         </div>
         {showShortcuts && <KeyboardShortcuts onClose={() => setShowShortcuts(false)} />}
       </div>

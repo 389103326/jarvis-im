@@ -62,6 +62,13 @@ function ToastItem({ toast, onDismiss }) {
     setTimeout(onDismiss, 300)
   }
 
+  const handleClick = () => {
+    if (toast.action?.fn) {
+      toast.action.fn()
+    }
+    handleDismiss()
+  }
+
   return (
     <div
       className={`
@@ -70,8 +77,8 @@ function ToastItem({ toast, onDismiss }) {
         ${config.bg} ${config.border}
         ${visible && !leaving ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
       `}
-      onClick={handleDismiss}
-      title="点击关闭"
+      onClick={handleClick}
+      title={toast.action?.fn ? '点击跳转' : '点击关闭'}
     >
       {/* 进度条 */}
       <div

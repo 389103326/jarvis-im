@@ -130,6 +130,20 @@ export function useSocket() {
 
         // 🍞 In-app toast 提醒
         if (isMention) {
+          // 构建跳转 action（频道或 DM）
+          const mentionAction = {
+            label: '查看',
+            fn: () => {
+              const { setActiveChannel, fetchMessages } = useChatStore.getState()
+              if (message.dmChannelId) {
+                setActiveChannel(message.dmChannelId, 'dm')
+                fetchMessages(message.dmChannelId, 'dm')
+              } else if (message.channelId) {
+                setActiveChannel(message.channelId, 'channel')
+                fetchMessages(message.channelId, 'channel')
+              }
+            }
+          }
           toast.mention(
             `${message.username} 提到了你${message.content ? `："${message.content.slice(0, 50)}${message.content.length > 50 ? '…' : ''}"` : ''}`,
             {
@@ -138,9 +152,18 @@ export function useSocket() {
                 initial: message.username?.[0]?.toUpperCase(),
               },
               duration: 6000,
+              action: mentionAction,
             }
           )
         } else if (message.dmChannelId && shouldNotify) {
+          const dmAction = {
+            label: '回复',
+            fn: () => {
+              const { setActiveChannel, fetchMessages } = useChatStore.getState()
+              setActiveChannel(message.dmChannelId, 'dm')
+              fetchMessages(message.dmChannelId, 'dm')
+            }
+          }
           toast.info(
             `${message.username}: ${message.type === 'image' ? '🖼️ 发来了图片' : (message.content?.slice(0, 60) || '')}`,
             {
@@ -149,6 +172,7 @@ export function useSocket() {
                 initial: message.username?.[0]?.toUpperCase(),
               },
               duration: 4500,
+              action: dmAction,
             }
           )
         }
