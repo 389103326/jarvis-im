@@ -1,0 +1,36 @@
+# 依赖目录（不上传，服务器上 npm install 生成）
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# 数据库文件（运行时数据，不上传）
+server/messages.db
+server/messages.db-shm
+server/messages.db-wal
+*.db
+*.db-shm
+*.db-wal
+
+# 用户上传文件（运行时数据，不上传）
+server/uploads/avatars/*
+!server/uploads/avatars/.gitkeep
+
+# 前端构建产物（可选：不上传则需在服务器上 npm run build）
+# client/dist/
+
+# 环境变量文件（保密，不上传）
+.env
+.env.local
+.env.production
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log
+npm-debug.log*
+
+# 编辑器
+.vscode/
+.idea/

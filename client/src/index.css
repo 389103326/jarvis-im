@@ -1,0 +1,643 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==================== 主题系统 CSS 变量 ==================== */
+
+/* 默认主题：Discord Dark */
+:root {
+  --dc-bg: #1e1f22;
+  --dc-sidebar: #2b2d31;
+  --dc-channel: #313338;
+  --dc-input: #383a40;
+  --dc-hover: #35373c;
+  --dc-text: #dcddde;
+  --dc-muted: #949ba4;
+  --dc-accent: #5865f2;
+  --dc-green: #23a55a;
+  --dc-red: #f23f42;
+  --dc-yellow: #f0b132;
+
+  /* 骨架屏颜色 */
+  --dc-skeleton-from: #2b2d31;
+  --dc-skeleton-to: #383a40;
+
+  /* 字体大小基准 */
+  --dc-font-base: 15px;
+
+  /* 消息密度 */
+  --dc-msg-py: 6px;
+  --dc-msg-py-grouped: 2px;
+}
+
+/* 浅色主题 */
+[data-theme="light"] {
+  --dc-bg: #f2f3f5;
+  --dc-sidebar: #e3e5e8;
+  --dc-channel: #ffffff;
+  --dc-input: #d5d7db;
+  --dc-hover: #c8ccd2;
+  --dc-text: #2e3338;
+  --dc-muted: #60666f;
+  --dc-accent: #5865f2;
+  --dc-green: #188038;
+  --dc-red: #d8383b;
+  --dc-yellow: #c27c0e;
+  --dc-skeleton-from: #d5d7db;
+  --dc-skeleton-to: #c5c7cc;
+}
+
+/* 午夜主题（OLED）*/
+[data-theme="midnight"] {
+  --dc-bg: #0d0d0d;
+  --dc-sidebar: #141414;
+  --dc-channel: #1a1a1a;
+  --dc-input: #242424;
+  --dc-hover: #202020;
+  --dc-text: #e2e2e2;
+  --dc-muted: #787878;
+  --dc-accent: #5865f2;
+  --dc-green: #23a55a;
+  --dc-red: #f23f42;
+  --dc-yellow: #f0b132;
+  --dc-skeleton-from: #1a1a1a;
+  --dc-skeleton-to: #242424;
+}
+
+/* 海洋主题 */
+[data-theme="ocean"] {
+  --dc-bg: #1a2234;
+  --dc-sidebar: #1e2a3d;
+  --dc-channel: #222f44;
+  --dc-input: #2a3a55;
+  --dc-hover: #273348;
+  --dc-text: #cdd9e5;
+  --dc-muted: #7d90a0;
+  --dc-accent: #3b82f6;
+  --dc-green: #23a55a;
+  --dc-red: #f23f42;
+  --dc-yellow: #f0b132;
+  --dc-skeleton-from: #1e2a3d;
+  --dc-skeleton-to: #2a3a55;
+}
+
+/* 消息密度 - 紧凑 */
+[data-density="compact"] {
+  --dc-msg-py: 2px;
+  --dc-msg-py-grouped: 1px;
+}
+
+/* 消息密度 - 宽松 */
+[data-density="spacious"] {
+  --dc-msg-py: 10px;
+  --dc-msg-py-grouped: 4px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background-color: var(--dc-bg);
+  color: var(--dc-text);
+  height: 100vh;
+  overflow: hidden;
+  font-size: var(--dc-font-base);
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 消息高亮 @提及 */
+.mention {
+  background-color: rgba(88, 101, 242, 0.3);
+  color: #c9cdfb;
+  border-radius: 3px;
+  padding: 0 2px;
+  font-weight: 500;
+}
+
+/* 消息内容换行 */
+.message-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 引用回复样式 */
+.reply-preview {
+  border-left: 3px solid #4f545c;
+  padding-left: 8px;
+  margin-bottom: 4px;
+  font-size: 0.85em;
+  color: #a3a6aa;
+}
+
+/* 输入框 */
+.chat-input {
+  resize: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  color: #dcddde;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.chat-input::placeholder {
+  color: #72767d;
+}
+
+/* 消息悬浮工具栏动画 */
+.message-actions {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.message-item:hover .message-actions {
+  opacity: 1;
+}
+
+/* 消息入场动画 */
+@keyframes msgSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 消息列表项使用 CSS 变量控制间距（主题密度） */
+.message-item {
+  animation: msgSlideIn 0.18s ease-out both;
+  padding-top: var(--dc-msg-py);
+  padding-bottom: var(--dc-msg-py);
+}
+
+.message-item.grouped {
+  padding-top: var(--dc-msg-py-grouped);
+  padding-bottom: var(--dc-msg-py-grouped);
+}
+
+/* 分类折叠过渡 */
+.category-channels {
+  overflow: hidden;
+  transition: max-height 0.2s ease, opacity 0.2s ease;
+}
+
+/* @提及标签 */
+.mention-tag {
+  font-size: 0.9em;
+  padding: 0 3px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+/* 骨架屏动画 */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--dc-skeleton-from) 25%, var(--dc-skeleton-to) 50%, var(--dc-skeleton-from) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* 图片消息 */
+.message-image {
+  max-width: 400px;
+  max-height: 300px;
+  border-radius: 8px;
+  cursor: pointer;
+  object-fit: contain;
+}
+
+/* 拖拽上传遮罩 */
+.drag-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(88, 101, 242, 0.2);
+  border: 3px dashed #5865f2;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #5865f2;
+  pointer-events: none;
+}
+
+/* 通知角标 */
+.unread-badge {
+  background-color: #f23f42;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 1px 5px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 16px;
+}
+
+.channel-item {
+  transition: background-color 0.1s ease;
+}
+
+.channel-item:hover {
+  background-color: var(--dc-hover);
+}
+
+.channel-item.active {
+  background-color: var(--dc-input);
+  color: white;
+}
+
+/* 代码块样式 */
+pre code {
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+}
+
+/* 连接状态 banner 过渡 */
+.connection-banner {
+  transition: all 0.3s ease;
+}
+
+/* 消息分组：悬停时显示时间戳 */
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+/* 滚动到底部按钮 */
+.scroll-to-bottom-btn {
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* 未读消息 badge 脉冲动画 */
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.unread-badge {
+  animation: pulse-badge 2s infinite;
+}
+
+/* 频道切换过渡 */
+.channel-transition {
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 用户资料卡片 */
+.profile-card {
+  animation: popIn 0.15s ease;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* 命令面板 */
+.command-palette {
+  animation: overlayIn 0.15s ease;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* emoji picker 样式 */
+emoji-picker {
+  --background: #2b2d31;
+  --border-color: #1e1f22;
+  --button-active-background: #404249;
+  --button-hover-background: #35373c;
+  --category-emoji-size: 1.1rem;
+  --emoji-size: 1.2rem;
+  --indicator-color: #5865f2;
+  --input-border-color: #1e1f22;
+  --input-font-color: #dcddde;
+  --input-placeholder-color: #72767d;
+  --num-columns: 8;
+  --outline-color: #5865f2;
+  --text-color: #dcddde;
+  height: 350px;
+  width: 350px;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+/* ===== 消息跳转高亮动画 ===== */
+@keyframes messageHighlight {
+  0%   { background-color: rgba(88, 101, 242, 0.35); }
+  60%  { background-color: rgba(88, 101, 242, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.message-highlight {
+  animation: messageHighlight 2s ease forwards;
+  border-radius: 4px;
+}
+
+/* 引用回复可点击样式 */
+.reply-preview {
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.reply-preview:hover {
+  border-left-color: #5865f2;
+  color: #dcddde;
+}
+
+/* DM未读角标 */
+.dm-unread-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #f23f42;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* 键盘快捷键帮助模态框 */
+.shortcuts-modal kbd {
+  display: inline-block;
+  background: var(--dc-input);
+  border: 1px solid var(--dc-hover);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 12px;
+  font-family: 'Fira Code', monospace;
+  color: var(--dc-text);
+}
+
+/* 书签面板入场动画 */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 消息收藏书签高亮 */
+.message-bookmarked {
+  background-color: rgba(255, 220, 100, 0.05);
+  border-left: 2px solid rgba(255, 220, 100, 0.4);
+}
+
+/* 通知菜单关闭时不遮挡 */
+.notif-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+}
+
+/* ==================== 消息动画 ==================== */
+
+/* 新消息进入动画 */
+@keyframes messageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.message-new {
+  animation: messageIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 消息失败状态 pulse */
+@keyframes failPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* 侧边栏频道切换动画 */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* 弹窗进入动画（通用） */
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-animate {
+  animation: modalIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 反应按钮弹出动画 */
+@keyframes reactionPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.reaction-pop {
+  animation: reactionPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ==================== Emoji 反应爆炸粒子动画 ==================== */
+
+@keyframes emojiBurst {
+  0%   { transform: translate(-50%, -50%) translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+  80%  { opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.4); opacity: 0; }
+}
+
+.emoji-burst-particle {
+  animation: emojiBurst 0.65s ease-out forwards;
+}
+
+/* ==================== Reaction 计数动画 ==================== */
+@keyframes reactionCountPop {
+  0%   { transform: scale(1.5); color: var(--dc-accent); }
+  60%  { transform: scale(0.9); }
+  100% { transform: scale(1); color: inherit; }
+}
+
+.reaction-count-pop {
+  display: inline-block;
+  animation: reactionCountPop 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* ==================== Toast 通知 ==================== */
+
+/* Toast 进度条动画 */
+@keyframes toast-progress {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+/* Context menu 动画 */
+.context-menu {
+  animation: contextMenuIn 0.12s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes contextMenuIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 代码块复制按钮 */
+.code-copy-btn {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ==================== 移动端适配 ==================== */
+
+/* iOS 安全区域 padding */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* 移动端触控优化 */
+@media (max-width: 768px) {
+  /* 确保触控目标最小尺寸 44px */
+  button, [role="button"] {
+    min-height: 36px;
+  }
+
+  /* 禁用长按弹出系统菜单 */
+  .no-callout {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* 平滑滚动（iOS 动量） */
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 消息列表在移动端的底部安全区 */
+  .message-input-wrapper {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4px);
+  }
+
+  /* 减少移动端字体大小 */
+  .format-toolbar {
+    display: none;
+  }
+
+  .format-toolbar.mobile-visible {
+    display: flex;
+  }
+}
+
+/* 移动端侧边栏动画 */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ==================== WebRTC 通话弹窗 ==================== */
+
+@keyframes callPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(35, 165, 90, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(35, 165, 90, 0); }
+}
+
+.call-avatar-pulse {
+  animation: callPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes callRing {
+  0%, 100% { transform: rotate(-8deg); }
+  25% { transform: rotate(8deg); }
+  50% { transform: rotate(-4deg); }
+  75% { transform: rotate(4deg); }
+}
+
+.call-ring-icon {
+  display: inline-block;
+  animation: callRing 0.5s ease-in-out infinite;
+}
+
+@keyframes slideUpIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.call-modal-enter {
+  animation: slideUpIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
